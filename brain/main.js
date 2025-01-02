@@ -769,6 +769,7 @@ textFolder.addColor({ color: textMaterial.color.getHex() }, 'color')
 
 
 gui.close();
+gui.hide();
 
 renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setSize(sizes.width, sizes.height);
@@ -776,7 +777,7 @@ renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 renderer.outputColorSpace = THREE.SRGBColorSpace;
 renderer.toneMapping = THREE.ReinhardToneMapping;
 document.body.appendChild(renderer.domElement);
-document.body.appendChild(stats.dom);
+// document.body.appendChild(stats.dom);
 
 const composer = new EffectComposer(renderer);
 const renderPass = new RenderPass(scene, tubeCamera);
@@ -861,7 +862,7 @@ const clock = new THREE.Clock();
 clock.start();
 
 const animate = () => {
-  stats.begin();
+  // stats.begin();
   const elapsedTime = clock.getElapsedTime();
   gifTextures.forEach((gifTexture, index) => {
     gifTexture.update();
@@ -900,7 +901,7 @@ const animate = () => {
   // scene.traverse(restoreMaterial);
   // finalComposer.render();
   // renderer.render(scene, camera) //for debug
-  stats.end();
+  // stats.end();
   window.requestAnimationFrame(animate);
 };
 
