@@ -247,19 +247,19 @@ camera.add(listener);
 
 
 const audioFiles = [
-  '/res/meows/1.mp3',
-  '/res/meows/2.mp3',
-  '/res/meows/3.mp3',
-  '/res/meows/4.mp3',
-  '/res/meows/5.mp3',
-  '/res/meows/6.mp3',
-  '/res/meows/7.mp3',
-  '/res/meows/3.mp3',
-  '/res/meows/4.mp3',
-  '/res/meows/6.mp3',
-  '/res/meows/2.mp3',
-  '/res/meows/1.mp3',
-  '/res/meows/5.mp3',
+  './res/meows/1.mp3',
+  './res/meows/2.mp3',
+  './res/meows/3.mp3',
+  './res/meows/4.mp3',
+  './res/meows/5.mp3',
+  './res/meows/6.mp3',
+  './res/meows/7.mp3',
+  './res/meows/3.mp3',
+  './res/meows/4.mp3',
+  './res/meows/6.mp3',
+  './res/meows/2.mp3',
+  './res/meows/1.mp3',
+  './res/meows/5.mp3',
 ];
 let name = window.location.hash.substring(1);
 if (name.length == 0) name = 'CupCake'
