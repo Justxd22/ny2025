@@ -212,20 +212,20 @@ const tubeMaterial = new THREE.MeshBasicMaterial({
 const tube = new THREE.Mesh(tubeGeometry, tubeMaterial);
 const geometry = new THREE.PlaneGeometry(4, 4, 1, 1);
 const gifs = [
-  "/res/gifs/nyan-cat.gif",
-  "/res/gifs/1.gif",
-  "/res/gifs/2.gif",
-  "/res/gifs/3.gif",
-  "/res/gifs/4.gif",
-  "/res/gifs/5.gif",
-  "/res/gifs/6.gif",
-  "/res/gifs/7.gif",
-  "/res/gifs/8.gif",
-  "/res/gifs/9.gif",
-  "/res/gifs/10.gif",
-  "/res/gifs/11.gif",
-  "/res/gifs/12.gif",
-  "/res/gifs/13.gif", // award
+  "./res/gifs/nyan-cat.gif",
+  "./res/gifs/1.gif",
+  "./res/gifs/2.gif",
+  "./res/gifs/3.gif",
+  "./res/gifs/4.gif",
+  "./res/gifs/5.gif",
+  "./res/gifs/6.gif",
+  "./res/gifs/7.gif",
+  "./res/gifs/8.gif",
+  "./res/gifs/9.gif",
+  "./res/gifs/10.gif",
+  "./res/gifs/11.gif",
+  "./res/gifs/12.gif",
+  "./res/gifs/13.gif", // award
 ];
 
 camera = new THREE.PerspectiveCamera(
