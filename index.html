@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <!-- <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"> -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Happy2025</title>
+
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://unpkg.com/three@0.169.0/build/three.module.js",
+        "lil-gui": "https://cdn.skypack.dev/lil-gui",
+        "stats.js": "https://cdn.skypack.dev/stats.js",
+        "three/examples/jsm/geometries/TextGeometry.js": "https://unpkg.com/three@0.169.0/examples/jsm/geometries/TextGeometry.js",
+        "three/examples/jsm/loaders/GifLoader.js": "https://unpkg.com/three@0.169.0/examples/jsm/loaders/GifLoader.js",
+        "three/examples/jsm/curves/CurveExtras.js": "https://unpkg.com/three@0.169.0/examples/jsm/curves/CurveExtras.js",
+        "three/examples/jsm/geometries/TextGeometry.js": "https://unpkg.com/three@0.169.0/examples/jsm/geometries/TextGeometry.js",
+        "three/examples/jsm/loaders/FontLoader.js": "https://unpkg.com/three@0.169.0/examples/jsm/loaders/FontLoader.js",
+        "three/examples/jsm/loaders/TTFLoader.js": "https://unpkg.com/three@0.169.0/examples/jsm/loaders/TTFLoader.js",
+        "three/examples/jsm/lines/Line2.js": "https://unpkg.com/three@0.169.0/examples/jsm/lines/Line2.js",
+        "three/examples/jsm/lines/LineMaterial.js": "https://unpkg.com/three@0.169.0/examples/jsm/lines/LineMaterial.js",
+        "three/examples/jsm/lines/LineGeometry.js": "https://unpkg.com/three@0.169.0/examples/jsm/lines/LineGeometry.js",
+        "three/examples/jsm/postprocessing/EffectComposer.js": "https://unpkg.com/three@0.169.0/examples/jsm/postprocessing/EffectComposer.js",
+        "three/examples/jsm/postprocessing/RenderPass.js": "https://unpkg.com/three@0.169.0/examples/jsm/postprocessing/RenderPass.js",
+        "three/examples/jsm/postprocessing/ShaderPass.js": "https://unpkg.com/three@0.169.0/examples/jsm/postprocessing/ShaderPass.js",
+        "three/examples/jsm/postprocessing/OutputPass.js": "https://unpkg.com/three@0.169.0/examples/jsm/postprocessing/OutputPass.js",
+        "three/examples/jsm/postprocessing/UnrealBloomPass.js": "https://unpkg.com/three@0.169.0/examples/jsm/postprocessing/UnrealBloomPass.js",
+        "gsap": "https://cdn.skypack.dev/gsap",
+        "gsap/ScrollTrigger": "https://cdn.skypack.dev/gsap/ScrollTrigger"
+      }
+    }
+  </script>
+
+  <script type="vertex" id="vertexshader">
+
+    varying vec2 vUv;
+
+    void main() {
+
+      vUv = uv;
+
+      gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
+
+    }
+
+  </script>
+
+  <script type="fragment" id="fragmentshader">
+
+    uniform sampler2D baseTexture;
+    uniform sampler2D bloomTexture;
+
+    varying vec2 vUv;
+
+    void main() {
+
+      gl_FragColor = ( texture2D( baseTexture, vUv ) + vec4( 1.0 ) * texture2D( bloomTexture, vUv ) );
+
+    }
+
+  </script>
+    
+
+
+  <script src="./bundle/gifuct-bundle.js"></script>
+  <script type="module" src="./brain/main.js"></script>
+  <link href="./styles/kitty.css" rel="stylesheet">
+</head>
+
+<!-- <body onload="lol();"> -->
+<body>
+  <audio id=" mus" loop autoplay>
+  <source src="./res/music/jats.aac">
+  </source>
+  </audio>
+
+
+  <div id="disa">
+    <div id="hii" class="hiiys">Spacinnnn...</div>
+    <div id="prog" class="progress">
+      <div class="progress-value"></div>
+    </div>
+    <button id="btt" class="bttn" style="display: none;">Contine</button>
+  </div>
+
+
+  <div class="scroll"></div>
+
+
+</body>
+
+</html>

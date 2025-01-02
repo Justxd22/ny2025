@@ -1,0 +1,41 @@
+@font-face {
+  font-family: 'computer';
+  font-style: normal;
+  font-weight: 300;
+  font-stretch: normal;
+  src: url('../res/fonts/Computerfont.ttf') format('truetype');
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  min-height: 100vh;
+  padding: 0;
+  margin: 0;
+  background: black;
+  background: radial-gradient(circle at center, rgb(0, 0, 10) 0%, rgb(7, 7, 70) 100%);
+  /* background-attachment: fixed; Keeps the gradient fixed when scrolling */
+  /* background-size: cover; Ensures the gradient fully covers the body */
+  color: white; /* Make sure text is visible against the dark background */
+}
+
+canvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+  z-index: -1;
+}
+
+.scroll {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+}
