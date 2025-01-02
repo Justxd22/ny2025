@@ -3,7 +3,7 @@
   font-style: normal;
   font-weight: 300;
   font-stretch: normal;
-  src: url('/res/fonts/Computerfont.ttf') format('truetype');
+  src: url('./res/fonts/Computerfont.ttf') format('truetype');
 }
 
 /* @font-face {
@@ -11,7 +11,7 @@
   font-style: normal;
   font-weight: 300;
   font-stretch: normal;
-  src: url('/res/fonts/ChakraPetch-Bold.ttf') format('truetype');
+  src: url('./res/fonts/ChakraPetch-Bold.ttf') format('truetype');
 } */
 
 * {
