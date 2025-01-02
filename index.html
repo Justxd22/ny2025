@@ -105,6 +105,49 @@
   <div class="footer">
     <a href="https://xd22.me">made with ♥ by Justxd22</a>
   </div>
+
+  <script type="module">
+    // Import the functions you need from the SDKs you need
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
+    import { getAnalytics, logEvent } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-analytics.js";
+    // TODO: Add SDKs for Firebase products that you want to use
+    // https://firebase.google.com/docs/web/setup#available-libraries
+  
+    // Your web app's Firebase configuration
+    // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+    const firebaseConfig = {
+      apiKey: "AIzaSyA73Pt14qfDKU6wRe96ltQQ6BkBiGXjfTk",
+      authDomain: "ny25xd.firebaseapp.com",
+      projectId: "ny25xd",
+      storageBucket: "ny25xd.firebasestorage.app",
+      messagingSenderId: "520920417435",
+      appId: "1:520920417435:web:ba6473bf37f37ec70f323e",
+      measurementId: "G-F823JXKQ5N"
+    };
+  
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const analytics = getAnalytics(app);
+
+    function logPageVisit() {
+            // Log the page view
+            logEvent(analytics, 'page_view', {
+                page_path: window.location.pathname,
+                page_title: document.title,
+                page_location: window.location.href
+            });
+
+            // Custom event
+            logEvent(analytics, 'threejs_app_visit', {
+                timestamp: new Date().toISOString(),
+                referrer: document.referrer || 'direct',
+                screen_resolution: `${window.screen.width}x${window.screen.height}`
+            });
+        }
+
+        // Call this when page loads
+        window.addEventListener('load', logPageVisit);
+  </script>
 </body>
 
 </html>
