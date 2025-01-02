@@ -3,7 +3,6 @@
 
 <head>
   <meta charset="UTF-8">
-  <!-- <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"> -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Happy2025</title>
 
@@ -63,32 +62,43 @@
   </script>
     
 
-
+  <!-- <script src="https://cdn.jsdelivr.net/npm/eruda"></script>
+  <script>eruda.init();</script> -->
   <script src="./bundle/gifuct-bundle.js"></script>
   <script type="module" src="./brain/main.js"></script>
   <link href="./styles/kitty.css" rel="stylesheet">
 </head>
 
-<!-- <body onload="lol();"> -->
-<body>
-  <audio id=" mus" loop autoplay>
+<body onload="lol();">
+  <audio id="mus" loop autoplay>
   <source src="./res/music/jats.aac">
   </source>
   </audio>
 
 
   <div id="disa">
-    <div id="hii" class="hiiys">Spacinnnn...</div>
+  <img id="arw" src="/res/gifs/loadcat.gif" class="arrow1 fadeI">
+    <div id="hii" class="hiiys">Yoo Hi <span style="font-size: 3.5rem; font-weight: bolder;" id="name">Cupcake</span></div>
+    <script>
+      var name = window.location.hash.substring(1);
+      if (name.length == 0) name = 'CupCake'
+      console.log(name);
+      document.getElementById('name').textContent = name
+    </script>
     <div id="prog" class="progress">
       <div class="progress-value"></div>
     </div>
-    <button id="btt" class="bttn" style="display: none;">Contine</button>
-  </div>
+  <button id="btt" class="bttn" style="display: none;">Contine</button>
+  <div id="scrl" style="display: none;" class="hiiys fadeI">Scroll Down to start!</div>
+  <img id="arw" style="display: none;" src="/res/img/arrow.png" class="arrow fadeI">
 
+</div>
 
   <div class="scroll"></div>
 
-
+  <div class="footer">
+    <a href="https://xd22.me">made with ♥ by Justxd22</a>
+  </div>
 </body>
 
 </html>

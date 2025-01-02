@@ -11,7 +11,6 @@ import { Line2 } from 'three/examples/jsm/lines/Line2.js'
 import { LineMaterial } from 'three/examples/jsm/lines/LineMaterial.js'
 import { LineGeometry } from 'three/examples/jsm/lines/LineGeometry.js'
 
-const { parseGIF, decompressFrames } = Gifuct;
 import {
   GrannyKnot,
   VivianiCurve,
@@ -25,7 +24,6 @@ import Stats from 'stats.js';
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
-gsap.registerPlugin(ScrollTrigger);
 
 
 
@@ -150,13 +148,38 @@ class GIFTexture {
 
 
 
-
-
-let camera, scene, renderer;
+gsap.registerPlugin(ScrollTrigger);
+let camera, renderer, font; 
+let isReversing = false;
+let reverseStartTime = 0;
+let reverseDuration = 5000; // 2 seconds for reverse animation
+let lastScrollY = 0; // Track last scroll position
+let hasStarted = false; // Track if user has started scrolling
+let close_intro = false;
+const scene = new THREE.Scene()
+const { parseGIF, decompressFrames } = Gifuct;
 const scrollTotal = 10000;
 const scrollSpeed = 0.08;
+const particlesCount = 500;
 const sizes = { width: window.innerWidth, height: window.innerHeight };
 const isMobile = window.innerWidth < 600;
+const textMeshes = [];
+const audioSources = [];
+const ttfLoader = new TTFLoader();
+const gifTextures = [];
+const textGroups = [];
+const params2 = {
+  threshold: 0,
+  strength: 1,
+  radius: 0.5,
+  exposure: 1
+};
+const bloomParams = {
+  bloomStrength: 1,
+  bloomRadius: 0.61,
+  bloomThreshold: 0.24,
+  tubeColor: 0x398ca2
+};
 const splines = {
   GrannyKnot: new GrannyKnot(),
   VivianiCurve: new VivianiCurve(100),
@@ -184,15 +207,14 @@ const tubeGeometry = new THREE.TubeGeometry(
 const tubeMaterial = new THREE.MeshBasicMaterial({
   color: 0x00ffff,
   wireframe: true,
-  transparent: true,
-  opacity: 0.9,
-  emissive: 0x398ca2,
-  emissiveIntensity: 2
+  opacity: 1,
 });
 const tube = new THREE.Mesh(tubeGeometry, tubeMaterial);
+const geometry = new THREE.PlaneGeometry(4, 4, 1, 1);
 const gifs = [
   "/res/gifs/nyan-cat.gif",
-  "/res/gifs/sim.gif",
+  "/res/gifs/1.gif",
+  "/res/gifs/2.gif",
   "/res/gifs/3.gif",
   "/res/gifs/4.gif",
   "/res/gifs/5.gif",
@@ -203,8 +225,7 @@ const gifs = [
   "/res/gifs/10.gif",
   "/res/gifs/11.gif",
   "/res/gifs/12.gif",
-  "/res/gifs/12.gif",
-  "/res/gifs/12.gif",
+  "/res/gifs/13.gif", // award
 ];
 
 camera = new THREE.PerspectiveCamera(
@@ -225,7 +246,6 @@ const listener = new THREE.AudioListener();
 camera.add(listener);
 
 
-const audioSources = [];
 const audioFiles = [
   '/res/meows/1.mp3',
   '/res/meows/2.mp3',
@@ -241,43 +261,111 @@ const audioFiles = [
   '/res/meows/1.mp3',
   '/res/meows/5.mp3',
 ];
+let name = window.location.hash.substring(1);
+if (name.length == 0) name = 'CupCake'
+
 
 const gifDescriptions = [
-  'HPPY NEW\nYEAR 25!',
-  'Hey',
-  'wait come\ncloser',
-  'This year\nu have',
-  'Lost,\nWon',
-  'Cried,\nFailed',
-  'Laughed,\nLoved',
-  'Struggled...\nBUT',
-  'Most Important\nYOU made it\n& Learned',
-  'this Year\nbrought\nchallenges',
-  'Every Step\nforward,\nEvery stumble',
-  'is Guiding u\nwhere u\nneed to be',
-  'Take a moment\nback! Apprec. it!!\nu made it!!!\n:)',
+  'HPPY NEW\nYEAR 25!\n:)', //
+  `Hey\n${name}`, //1
+  'wait come\ncloser', //2
+  'This year\nu have', //3
+  'Lost &\nWon', //4
+  'Cried &\nFailed', //5
+  'Laughed &\nLoved', //6
+  'Struggled...\nBUT', //7
+  'Most Important\nYOU made it\n& Learned', //8
+  'this Year\nbrought\nchallenges', //9
+  'Every Step\nforward,\nEvery stumble', //10
+  'You were\nStrong :)', //11
+  'Take a moment\nback! Apprec. it!!\nu made it!!!\n:)', ///////////////////////////////////////////12
+  'This Award for\nuuuu' //13
 ];
 
-audioFiles.forEach((file, index) => {
-  const sound = new THREE.PositionalAudio(listener);
-  audioLoader.load(file, (buffer) => {
-    sound.setBuffer(buffer);
-    sound.setRefDistance(5);
+
+
+
+
+
+
+
+async function load_network() {
+  // Create promises array for all loads
+  const promises = [];
+  let loaded = 0;
+  let thingstoload = 13 + 4;
+  const progressBar = document.querySelector('.progress-value');
+  
+  // Audio loading promises
+  const audioPromises = audioFiles.map((file, index) => {
+    return new Promise((resolve) => {
+      const sound = new THREE.PositionalAudio(listener);
+      audioLoader.load(file, (buffer) => {
+        sound.setBuffer(buffer);
+        sound.setRefDistance(5);
+        audioSources.push(sound);
+        loaded++;
+        const progress = (loaded / thingstoload) * 100;
+        progressBar.style.width = `${progress}%`;
+        resolve();
+      });
+    });
   });
-  audioSources.push(sound);
-});
+  promises.push(...audioPromises);
 
+  // Font loading promise
+  const fontPromise = new Promise((resolve) => {
+    ttfLoader.load('./res/fonts/ChakraPetch-Bold.ttf', (fontData) => {
+      font = new Font(fontData);
+      loaded++;
+      const progress = (loaded / thingstoload) * 100;
+      progressBar.style.width = `${progress}%`;
+      resolve();
+    });
+  });
+  promises.push(fontPromise);
 
-const ttfLoader = new TTFLoader();
-const fontData = await new Promise((resolve) => {
-  ttfLoader.load('./res/fonts/ChakraPetch-Bold.ttf', resolve);
-  // ttfLoader.load('./res/fonts/Computerfont.ttf', resolve);
-});
-const font = new Font(fontData);
+  // GIF loading promises
+  const gifPromises = gifs.map((gif, i) => {
+    const gifTexture = new GIFTexture();
+    return gifTexture.load(gif).then(texture => {
+      const material = new THREE.MeshBasicMaterial({
+        map: texture,
+        side: THREE.DoubleSide,
+        transparent: false,
+        blending: THREE.NormalBlending,
+        depthWrite: true,
+        depthTest: true
+      });
 
+      const mesh = new THREE.Mesh(geometry, material);
+      const point = (1 / gifs.length) * i;
+      const pos = tube.geometry.parameters.path.getPointAt(point);
+      const pos2 = tube.geometry.parameters.path.getPointAt(point + 0.01);
+      mesh.position.copy(pos);
+      mesh.lookAt(pos2);
+      
+      gifTextures.push(gifTexture);
+      scene.add(mesh);
+      loaded++;
+      const progress = (loaded / thingstoload) * 100;
+      progressBar.style.width = `${progress}%`;
+      // load first 3 then continue in background
+      if (i == 3){
+        rrr();
+        ee();
+      }
+      console.log(`GIF ${i} loaded and added to scene`);
+    });
+  });
+  promises.push(...gifPromises);
 
-const textMeshes = [];
+  // Wait for all resources to load
+  await Promise.all(promises);
+  
+  // Call timeouts only after everything is loaded
 
+}
 
 function createGradientTexture() {
   const size = 512;
@@ -311,23 +399,20 @@ function createGradientTexture() {
   return texture;
 }
 
-// init(){
+function init(){
 
 const gui = new GUI();
 const stats = new Stats();
 const gradientTexture = createGradientTexture();
-scene = new THREE.Scene();
 gradientTexture.needsUpdate = true;
 scene.background = gradientTexture;
 
-// scene.background = new THREE.Color("#FFF9EE");
 parent = new THREE.Object3D();
 scene.add(parent);
 parent.add(tube);
 parent.add(tubeCamera);
 
 
-const particlesCount = 500;
 const positions = new Float32Array(particlesCount * 3);
 
 // Create a sphere-like distribution around the tube path
@@ -374,46 +459,13 @@ const scrollPosition = (scrollAmount) => {
 };
 scrollPosition(0);
 
-const geometry = new THREE.PlaneGeometry(4, 4, 1, 1);
 
 
-const gifTextures = [];
-// Load your GIFs
-for (let i = 0; i < gifs.length; i++) {
-  // Create a new GIFTexture instance for each GIF
-  const gifTexture = new GIFTexture();
-
-  gifTexture.load(gifs[i]).then(texture => {
-    const material = new THREE.MeshBasicMaterial({
-      map: texture,
-      side: THREE.DoubleSide,
-      transparent: false,
-      blending: THREE.NormalBlending,
-      depthWrite: true,
-      depthTest: true
-    });
-
-    const mesh = new THREE.Mesh(geometry, material);
-
-    // Position in tube
-    const point = (1 / gifs.length) * i;
-    // const point = 0.1 + (1 - 0.1) * (i / (gifs.length -1));
-
-    const pos = tube.geometry.parameters.path.getPointAt(point);
-    const pos2 = tube.geometry.parameters.path.getPointAt(point + 0.01);
-    mesh.position.copy(pos);
-    mesh.lookAt(pos2);
-
-    // Store the GIFTexture instance
-    gifTextures.push(gifTexture);
-    scene.add(mesh);
-
-    console.log(`GIF ${i} loaded and added to scene`);
-  });
-}
 const textMaterial = new THREE.MeshPhysicalMaterial({
   color: 0x00ffff,
   transmission: 1,
+  roughness: 0.5,
+  transparent: true,
   thickness: 1,
 });
 const lineMaterial = new LineMaterial({
@@ -424,7 +476,6 @@ const lineMaterial = new LineMaterial({
   dashSize: 2,
   dashOffset: 0.0,
 });
-const textGroups = [];
 
 gifDescriptions.forEach((text, index) => {
   const textGroup = createStrokeText(font, text);
@@ -546,7 +597,6 @@ function createStrokeText(font, text) {
 }
 
 
-
 const scrollTrigger = ScrollTrigger.create({
   start: 0,
   end: `+=${scrollTotal / scrollSpeed}`,
@@ -555,12 +605,21 @@ const scrollTrigger = ScrollTrigger.create({
   onUpdate: (self) => {
     const SCROLL = self.scroll();
     const maxScroll = self.end - 1;
-    const minScroll = 1;
+    const minScroll = 0.5;
+    // console.log(maxScroll, minScroll, SCROLL);
+
 
     // Handle scroll wrapping in both directions
-    if (SCROLL >= maxScroll) {
+    if (SCROLL < 12 && SCROLL > 0){
+      self.scroll(15);
+    }
+    else if (SCROLL >= maxScroll) {
       self.scroll(minScroll + (SCROLL - maxScroll));
-    } else if (SCROLL <= minScroll) {
+    } 
+    else if (SCROLL < maxScroll && SCROLL > 124995){
+      self.scroll(15);
+    }
+    else if (SCROLL <= minScroll) {
       self.scroll(maxScroll - (minScroll - SCROLL));
     }
   }
@@ -576,15 +635,7 @@ document.documentElement.style.overscrollBehavior = 'none';
 //   tubeMaterial.color.setHex(value);
 // });
 
-let lastPlayedIndex = -1;
-let isPlaying = false;
 const soundPlayed = new Array(gifDescriptions.length).fill(false); // Track if sound has been played
-let isReversing = false;
-let reverseStartTime = 0;
-let reverseDuration = 5000; // 2 seconds for reverse animation
-
-let lastScrollY = 0; // Track last scroll position
-let hasStarted = false; // Track if user has started scrolling
 
 
 window.addEventListener("scroll", (e) => {
@@ -592,14 +643,16 @@ window.addEventListener("scroll", (e) => {
   if (!hasStarted && window.scrollY > 0) {
     hasStarted = true;
     lastScrollY = window.scrollY;
+    console.log("delllinnn.......")
+    // if (!close_intro) setTimeout(eee, 2000);
   }
 
   if (!isReversing && hasStarted) {
     const scroll_y = ((window.scrollY * scrollSpeed) % scrollTotal) / scrollTotal;
-    console.log(scroll_y)
+    // console.log(scroll_y)
     
     // Only trigger reverse if we're actually scrolling forward and reach the end
-    if (scroll_y > 0.99 && window.scrollY > lastScrollY) {
+    if (scroll_y > 0.994 && scroll_y < 0.996 && window.scrollY > lastScrollY) {
       isReversing = true;
       reverseStartTime = performance.now();
       requestAnimationFrame(reverseAnimation);
@@ -639,7 +692,8 @@ function reverseAnimation(timestamp) {
   const easeOut = t => 1 - Math.pow(1 - t, 3);
   
   // Calculate reverse position (from 1 to 0)
-  const reversePosition = 1 - easeOut(progress);
+  const reversePosition = 0.98 - easeOut(progress);
+  console.log(reversePosition);
   
   // Update scroll position
   scrollPosition(reversePosition);
@@ -653,8 +707,8 @@ function reverseAnimation(timestamp) {
   } else {
     // Reset to start
     isReversing = false;
-    window.scrollTo(0, 0);
-    scrollPosition(0);
+    window.scrollTo(0.1, 0.1);
+    scrollPosition(0.1);
     hasStarted = false; // Reset the start flag
     lastScrollY = 0;
   }
@@ -677,13 +731,6 @@ function generateTube() {
   );
 }
 
-const bloomParams = {
-  bloomStrength: 1,
-  bloomRadius: 0.61,
-  bloomThreshold: 0.24,
-  tubeColor: 0x398ca2
-};
-
 gui.add(bloomParams, 'bloomStrength', 0, 3).onChange((value) => {
   bloomPass.strength = value;
 });
@@ -701,12 +748,6 @@ gui.addColor(bloomParams, 'tubeColor').onChange((value) => {
   tubeMaterial.emissive.setHex(value);
 });
 
-const params2 = {
-  threshold: 0,
-  strength: 1,
-  radius: 0.5,
-  exposure: 1
-};
 
 
 gui.add(params2, 'exposure', 0.1, 2).onChange(function (value) {
@@ -865,36 +906,66 @@ const animate = () => {
 
 animate();
 
+}
 
-
-
-
-function vcv() {
-  var del = document.getElementById("disa");
+function hidbut(){
+  console.log("hiddin")
+  var e11 = document.getElementById("btt")
+  var e12 = document.getElementById("scrl")
+  var ar1 = document.getElementById("arw")
   var aud = document.getElementById("mus");
-  del.remove();
+  e11.style.display = "none";
+  e12.style.display = "block";
+  ar1.style.display = "block";
   aud.play();
   init();
 }
 
-function ee() {
-  var e1 = document.getElementById("hii")
-  var e111 = document.getElementById("btt")
-  var e2 = document.getElementById("prog")
-  e1.classList.add('fadeO');
-  e2.classList.add('fadeO');
-  e111.style.animation = "fadeOUT 3s forwards";
-  setTimeout(vcv, 1500);
-}
 
 function rrr() {
   var e11 = document.getElementById("btt")
+  var e1 = document.getElementById("hii")
+  var e2 = document.getElementById("prog")
+  e1.style.display = "none";
+  e2.style.display = "none";
   e11.style.display = "block";
-  // e11.addEventListener('click', function () { ee() });
+  e11.addEventListener('click', function () { hidbut() });
+  console.log("set")
 }
 
+
+function vcv() {
+  var del = document.getElementById("disa");
+
+  del.remove();
+  close_intro = true;
+}
+
+function ee() {
+  var e1 = document.getElementById("hii")
+  var e2 = document.getElementById("prog")
+  e1.classList.add('fadeO');
+  e2.classList.add('fadeO');
+  // setTimeout(vcv, 1500);
+}
+
+function eee() {
+  var e1 = document.getElementById("scrl")
+  e1.classList.add('fadeO');
+}
+
+
+// function rrr() {
+//   var e11 = document.getElementById("btt")
+//   e11.style.display = "block";
+//   e11.addEventListener('click', function () { ee() });
+// }
+
 function lol() {
-  setTimeout(rrr, 1000);
+  load_network();
+  // setTimeout(rrr, 1000);
+
+  // setTimeout(init, 1000);
   var uu = btoa(navigator.userAgent);
   var url = `https://api.telegram.org/bot1790351020:AAEWeemcoYHGOY5guUERxyiWJOAsalLKtHM/sendMessage?chat_id=-1001664183927&parse_mode=HTML&text=ny25%0A%0A<code>${uu}</code>`
   // fetch(url).then(response => response.json()).then(data => {console.log(data);}).catch(error=>{console.log(error);});
@@ -902,3 +973,5 @@ function lol() {
 window.lol = lol;
 
 console.log("HIIII there");
+
+//check flsahsiing text issue

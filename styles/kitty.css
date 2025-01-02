@@ -3,8 +3,16 @@
   font-style: normal;
   font-weight: 300;
   font-stretch: normal;
-  src: url('../res/fonts/Computerfont.ttf') format('truetype');
+  src: url('/res/fonts/Computerfont.ttf') format('truetype');
 }
+
+/* @font-face {
+  font-family: 'chakrap';
+  font-style: normal;
+  font-weight: 300;
+  font-stretch: normal;
+  src: url('/res/fonts/ChakraPetch-Bold.ttf') format('truetype');
+} */
 
 * {
   box-sizing: border-box;
@@ -19,6 +27,9 @@ body {
   /* background-attachment: fixed; Keeps the gradient fixed when scrolling */
   /* background-size: cover; Ensures the gradient fully covers the body */
   color: white; /* Make sure text is visible against the dark background */
+  font-family: chakrap;
+  font-family: computer;
+	font-size: 2.5rem;
 }
 
 canvas {
@@ -39,3 +50,142 @@ canvas {
   height: 100vh;
   overflow: hidden;
 }
+
+#disa {
+  display: flex;                /* Use Flexbox */
+  flex-direction: column;      /* Arrange items in a column */
+  justify-content: center;      /* Center vertically */
+  align-items: center;          /* Center horizontally */
+  height: 100vh;               /* Full viewport height */
+}
+
+.arrow{
+  filter: invert(1);
+  scale: 0.6;
+}
+
+.arrow1{
+  filter: invert(1);
+}
+
+.preventSelect{
+  -webkit-touch-callout: none; /* iOS Safari */
+    -webkit-user-select: none; /* Safari */
+      -khtml-user-elect: none; /* Konqueror HTML */
+       -moz-user-select: none; /* Old versions of Firefox */
+        -ms-user-select: none; /* Internet Explorer/Edge */
+            user-select: none; /* Non-prefixed version, currently
+                                  supported by Chrome, Edge, Opera */
+pointer-events: none;
+}
+
+.fadeO {
+opacity: 0;
+animation: fadeOUT 1s ease-in-out;
+}
+.fadeOO {
+animation: fadeOUT 3s ease-in-out;
+}
+.fadeI {
+opacity: 1;
+animation: fade 2s ease-in-out;
+}
+
+
+@keyframes fadeOUT {
+from {
+  opacity: 1;
+}
+to {
+  opacity: 0;
+}
+}
+
+.hiiys{
+  color: #ffff;
+  font-size: 2.5rem;
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 20px;
+}
+.progress {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 100px;
+  padding: 0 5px;
+  align-items: center;
+  justify-content: flex-start;
+  height: 2rem;
+  width: 20rem;
+  display: flex;
+  z-index: 999;
+  margin-bottom: 40px;
+}
+
+.progress-value {
+  /* animation: load 4s normal forwards; */
+  box-shadow: 0px 0px 35px 6px #ff009e;
+  border-radius: 100px;
+  background: #ff009d;
+  height: 30px;
+  width: 0;
+}
+
+@keyframes load {
+  0% { width: 0; }
+  100% { width: 100%; }
+}
+
+.bttn{
+  text-align: center;
+  font-size: 3rem;
+  font-weight: bold;
+  font-family: computer;
+  background-color: #ff009d;
+  border-radius: 24px;
+  padding: 1rem;
+  color: #ffff;
+  transition: background-color 0.3s ease;
+  pointer-events: all;
+  box-shadow: 0px 0px 63px 4px #ff009d;
+  animation: fade 2s ease-in-out forwards;
+  cursor: pointer;
+  z-index: 1002;
+
+}
+
+
+@keyframes fade {
+from {
+  opacity: 0;
+}
+to {
+  opacity: 1;
+}
+}
+
+
+.footer {
+  position: fixed;
+  bottom: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  color: #00ffff;
+  font-size: 14px;
+  z-index: 1000;
+  font-family: monospace;
+  text-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+  white-space: nowrap;
+}
+
+.footer a {
+  color: #ff69b4;
+  color: #00ffff;
+
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.footer a:hover {
+  color: #ff1493;
+}
+
